@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("Book")
 public class BookRequest {
     private String genre;
-    @Indexed(unique = true)
+    @Indexed(unique=true)
     private String title;
     private String content;
     private String lang;

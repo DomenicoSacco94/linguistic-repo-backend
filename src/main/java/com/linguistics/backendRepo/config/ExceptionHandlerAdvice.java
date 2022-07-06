@@ -14,13 +14,11 @@ public class ExceptionHandlerAdvice {
             super(message);
         }
     }
-
     public static class BookNotFoundException extends RuntimeException {
         public BookNotFoundException(String message) {
             super(message);
         }
     }
-
     public static class DuplicateBookException extends ControllerException {
         public DuplicateBookException(String message) {
             super(message);
