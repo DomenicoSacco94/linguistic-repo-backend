@@ -1,2 +1,2 @@
 # linguistuc-repo-backend
-Backend icroservice for the linguistic-repo
+Backend microservice for the linguistic-repo
