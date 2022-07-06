@@ -1,6 +1,9 @@
 package com.linguistics.backendRepo.config;
 
-import com.linguistics.backendRepo.model.ControllerException;
+import com.linguistics.backendRepo.exceptions.BadRequestException;
+import com.linguistics.backendRepo.exceptions.BookNotFoundException;
+import com.linguistics.backendRepo.exceptions.ControllerException;
+import com.linguistics.backendRepo.exceptions.DuplicateBookException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,22 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
-
-    public class BadRequestException extends ControllerException {
-        public BadRequestException(String message) {
-            super(message);
-        }
-    }
-    public static class BookNotFoundException extends RuntimeException {
-        public BookNotFoundException(String message) {
-            super(message);
-        }
-    }
-    public static class DuplicateBookException extends ControllerException {
-        public DuplicateBookException(String message) {
-            super(message);
-        }
-    }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity handleException(BadRequestException e) {

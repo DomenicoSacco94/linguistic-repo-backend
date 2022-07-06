@@ -1,6 +1,9 @@
 package com.linguistics.backendRepo.controller;
 
 import com.linguistics.backendRepo.config.ExceptionHandlerAdvice;
+import com.linguistics.backendRepo.exceptions.BadRequestException;
+import com.linguistics.backendRepo.exceptions.BookNotFoundException;
+import com.linguistics.backendRepo.exceptions.DuplicateBookException;
 import com.linguistics.backendRepo.model.Book;
 import com.linguistics.backendRepo.model.BookRequest;
 import com.linguistics.backendRepo.repository.BookRepository;
@@ -30,24 +33,27 @@ public class BooksController {
         String title = bookRequest.getTitle();
         Book book = bookRepository.findItemByTitle(title);
         if(book == null) {
-            throw new ExceptionHandlerAdvice.BookNotFoundException("This book could not be found: " + title);
+            throw new BookNotFoundException("This book could not be found: " + title);
         }
         return book;
     }
 
     @PostMapping("/addBook")
     Book newBook(@RequestBody Book book) {
+            if(book.getTitle() == null || book.getLang() == null) {
+                throw new BadRequestException("Please fill the mandatory fields");
+            }
             if (bookRepository.findItemByTitle(book.getTitle()) != null) {
-                throw new ExceptionHandlerAdvice.DuplicateBookException("This book already exists: " + book.getTitle());
+                throw new DuplicateBookException("This book already exists: " + book.getTitle());
             }
             return bookRepository.save(book);
     }
 
     @DeleteMapping("/books/{id}")
-    void deleteBook(@PathVariable String id) {
+    void deleteBook(@PathVariable String id) throws BookNotFoundException {
             Book book = bookRepository.findItemById(id);
             if(book == null) {
-                throw new ExceptionHandlerAdvice.BookNotFoundException("This book id could not be found: " + id);
+                throw new BookNotFoundException("This book id could not be found: " + id);
             }
             bookRepository.deleteById(id);
     }

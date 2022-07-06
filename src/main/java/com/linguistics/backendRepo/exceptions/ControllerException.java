@@ -1,4 +1,4 @@
-package com.linguistics.backendRepo.model;
+package com.linguistics.backendRepo.exceptions;
 
 public class ControllerException extends RuntimeException{
     public ControllerException(String message) {
