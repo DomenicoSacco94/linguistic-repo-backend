@@ -8,8 +8,11 @@ import java.util.List;
 
 public interface BookRepository extends MongoRepository<Book, String> {
 
-    @Query("{name:'?0'}")
+    @Query("{title:'?0'}")
     Book findItemByTitle(String title);
+
+    @Query("{id:'?0'}")
+    Book findItemById(String id);
 
     @Query(value="{genre:'?0'}", fields="{'title' : 1}")
     List<Book> findAll(String genre);
