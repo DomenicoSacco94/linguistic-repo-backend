@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Blob;
-import java.sql.Clob;
 
 @Document("Book")
 public class Book {
@@ -14,7 +13,7 @@ public class Book {
 
     private String genre;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String title;
     private String content;
     private Blob rawContent;
