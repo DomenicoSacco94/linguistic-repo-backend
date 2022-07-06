@@ -11,10 +11,6 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class BackendRepoApplication {
-
-	@Autowired
-	BookRepository bookRepository;
-
 	public static void main(String[] args) {
 		SpringApplication.run(BackendRepoApplication.class, args);
 	}
