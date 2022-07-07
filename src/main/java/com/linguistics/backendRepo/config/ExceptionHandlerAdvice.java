@@ -2,8 +2,8 @@ package com.linguistics.backendRepo.config;
 
 import com.linguistics.backendRepo.exceptions.BadRequestException;
 import com.linguistics.backendRepo.exceptions.BookNotFoundException;
-import com.linguistics.backendRepo.exceptions.ControllerException;
 import com.linguistics.backendRepo.exceptions.DuplicateBookException;
+import com.linguistics.backendRepo.exceptions.InternalServerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +30,13 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleException(DuplicateBookException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity handleException(InternalServerException e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
     }
 }

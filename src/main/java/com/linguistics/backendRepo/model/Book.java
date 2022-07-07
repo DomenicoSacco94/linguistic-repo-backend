@@ -4,9 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.sql.Blob;
-import java.sql.Clob;
-
 @Document("Book")
 public class Book {
     @Id
@@ -14,17 +11,20 @@ public class Book {
 
     private String genre;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String title;
     private String content;
-    private Blob rawContent;
+    private byte[] rawContent;
     private String lang;
 
-    public Book(String id, String title, String content, Blob rawContent) {
+    public Book(String id, String title, String content, byte[] rawContent) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.rawContent = rawContent;
+    }
+
+    public Book() {
     }
 
     public String getId() {
@@ -67,11 +67,11 @@ public class Book {
         this.content = content;
     }
 
-    public Blob getRawContent() {
+    public byte[] getRawContent() {
         return rawContent;
     }
 
-    public void setRawContent(Blob rawContent) {
+    public void setRawContent(byte[] rawContent) {
         this.rawContent = rawContent;
     }
 }
