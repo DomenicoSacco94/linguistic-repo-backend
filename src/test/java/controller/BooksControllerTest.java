@@ -3,6 +3,7 @@ package controller;
 import com.linguistics.backendRepo.BackendRepoApplication;
 import com.linguistics.backendRepo.model.Book;
 import com.linguistics.backendRepo.repository.BookRepository;
+import nonapi.io.github.classgraph.json.JSONSerializer;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -38,11 +39,11 @@ public class BooksControllerTest {
     }
 
     @Test
-    public void shouldRetrieveAllBooks() {
+    void shouldRetrieveAllBooks() {
 
         Book book1 = new Book(null, "book1", "content book 1", null);
         Book book2 = new Book(null, "book2", null, new byte[]{0,0,0,0});
-        Book book3 = new Book(null, "book1", "content book 1", null);
+        Book book3 = new Book(null, "book3", "content book 3", null);
 
         List<Book> books = List.of(new Book[]{book1, book2, book3});
 
@@ -50,6 +51,7 @@ public class BooksControllerTest {
 
         List<Book> response = this.restTemplate.getForObject("http://localhost:" + port + "/books", List.class);
 
-        assertThat(response.containsAll(books));
+        assertThat(response)
+                .hasSize(3);
     }
 }
