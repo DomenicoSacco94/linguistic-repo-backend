@@ -16,6 +16,7 @@ import java.util.List;
 import static com.linguistics.backendRepo.validator.BookValidator.validateBook;
 import static com.linguistics.backendRepo.validator.BookValidator.validateBookFile;
 
+//TODO SOLVE ISSUE WITH UNAUTHORIZED REQUESTS
 //TODO Dockerization
 //TODO DEPLOYMENT
 
