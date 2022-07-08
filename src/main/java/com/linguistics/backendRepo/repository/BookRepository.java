@@ -16,7 +16,6 @@ public interface BookRepository extends MongoRepository<Book, String> {
 
     @Query(fields = "{'title' : 1, 'lang' : 1, 'genre':  1}")
     List<Book> getAllBy();
-
     public long count();
 
 }

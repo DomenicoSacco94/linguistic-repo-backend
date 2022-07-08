@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linguistics.backendRepo.BackendRepoApplication;
 import com.linguistics.backendRepo.config.ExceptionHandlerAdvice;
 import com.linguistics.backendRepo.controller.BooksController;
-import com.linguistics.backendRepo.exceptions.BookNotFoundException;
 import com.linguistics.backendRepo.model.Book;
 import com.linguistics.backendRepo.repository.BookRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,7 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 
@@ -61,20 +59,15 @@ public class BooksControllerTest {
 
     @Test
     void shouldRetrieveAllBooks() throws Exception {
-
-        Book book1 = new Book(null, "book1", "content book 1", null);
-        Book book2 = new Book(null, "book2", null, new byte[]{0,0,0,0});
-        Book book3 = new Book(null, "book3", "content book 3", null);
-
+        Book book1 = new Book(null, "book1", "ENG", "content book 1", null);
+        Book book2 = new Book(null, "book2", "ENG", null, new byte[]{0,0,0,0});
+        Book book3 = new Book(null, "book3", "ENG", "content book 3", null);
         List<Book> books = List.of(new Book[]{book1, book2, book3});
-
         when(bookRepository.getAllBy()).thenReturn(books);
-
         MockHttpServletResponse response = mvc.perform(
                         get("http://localhost:" + port + "/books")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-
         ObjectMapper mapper = new ObjectMapper();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -82,14 +75,39 @@ public class BooksControllerTest {
     }
 
     @Test
-    void shouldRetrieveBookById() throws Exception {
-
+    void shouldDeleteBookById() throws Exception {
         String bookId = "123";
+        when(bookRepository.findItemById(bookId)).thenReturn(null);
 
-        Book book1 = new Book(bookId, "book1", "content book 1", null);
+        MockHttpServletResponse response = mvc.perform(
+                        delete("http://localhost:" + port + "/books/" + bookId)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
 
+        ObjectMapper mapper = new ObjectMapper();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void shouldDeleteBookByIdConflict() throws Exception {
+        String bookId = "123";
+        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null);
         when(bookRepository.findItemById(bookId)).thenReturn(book1);
 
+        MockHttpServletResponse response = mvc.perform(
+                        delete("http://localhost:" + port + "/books/" + bookId)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        ObjectMapper mapper = new ObjectMapper();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void shouldRetrieveBookById() throws Exception {
+        String bookId = "123";
+        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null);
+        when(bookRepository.findItemById(bookId)).thenReturn(book1);
         MockHttpServletResponse response = mvc.perform(
                         get("http://localhost:" + port + "/books/" + bookId)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +120,6 @@ public class BooksControllerTest {
 
     @Test
     void shouldRetrieveBookByIdNotFound() throws Exception {
-
         String bookId = "123";
         when(bookRepository.findItemById(bookId)).thenReturn(null);
         MockHttpServletResponse response = mvc.perform(
@@ -116,15 +133,10 @@ public class BooksControllerTest {
 
     @Test
     void shouldRetrieveBookByTitle() throws Exception {
-
         String bookTitle = "book 1";
-
-        Book book1 = new Book(null, bookTitle, null, null);
-
+        Book book1 = new Book(null, bookTitle, "ENG", null, null);
         when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(book1);
-
         ObjectMapper mapper = new ObjectMapper();
-
         MockHttpServletResponse response = mvc.perform(
                         post("http://localhost:" + port + "/books/")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,15 +151,10 @@ public class BooksControllerTest {
 
     @Test
     void shouldRetrieveBookByTitleNotFound() throws Exception {
-
         String bookTitle = "book 1";
-
-        Book book1 = new Book(null, bookTitle, null, null);
-
+        Book book1 = new Book(null, bookTitle, "ENG", null, null);
         when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(null);
-
         ObjectMapper mapper = new ObjectMapper();
-
         MockHttpServletResponse response = mvc.perform(
                         post("http://localhost:" + port + "/books/")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -158,5 +165,165 @@ public class BooksControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getContentAsString()).isEqualTo("This book could not be found: " + book1.getTitle());
+    }
+
+    @Test
+    void shouldSaveBookByText() throws Exception {
+        String bookTitle = "book title";
+        Book book1 = new Book(null, bookTitle, "ENG", "some content", null);
+        when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
+        ObjectMapper mapper = new ObjectMapper();
+        MockHttpServletResponse response = mvc.perform(
+                        post("http://localhost:" + port + "/addBookAsText")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(book1))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(mapper.readValue(response.getContentAsString(), Book.class).getTitle().equals(bookTitle)).isTrue();
+    }
+
+    @Test
+    void shouldSaveBookByTextConflict() throws Exception {
+        String bookTitle = "book title";
+        Book book1 = new Book(null, bookTitle, "ENG", "some content", null);
+        when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(book1);
+        ObjectMapper mapper = new ObjectMapper();
+        MockHttpServletResponse response = mvc.perform(
+                        post("http://localhost:" + port + "/addBookAsText")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(book1))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void shouldSaveBookByTextNoContent() throws Exception {
+        String bookTitle = "book title";
+        Book book1 = new Book(null, bookTitle, "ENG", null, null);
+        when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
+        ObjectMapper mapper = new ObjectMapper();
+        MockHttpServletResponse response = mvc.perform(
+                        post("http://localhost:" + port + "/addBookAsText")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(book1))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo("Please fill the mandatory fields");
+    }
+
+    @Test
+    void shouldSaveBookByTextNoLanguage() throws Exception {
+        String bookTitle = "book title";
+        Book book1 = new Book(null, bookTitle, null, "test content", null);
+        when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
+        ObjectMapper mapper = new ObjectMapper();
+        MockHttpServletResponse response = mvc.perform(
+                        post("http://localhost:" + port + "/addBookAsText")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(book1))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo("Please fill the mandatory fields");
+    }
+
+    @Test
+    void shouldSaveBookByTextNoTitle() throws Exception {
+        Book book1 = new Book(null, null, "ENG", "test content", null);
+        when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
+        ObjectMapper mapper = new ObjectMapper();
+        MockHttpServletResponse response = mvc.perform(
+                        post("http://localhost:" + port + "/addBookAsText")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(book1))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo("Please fill the mandatory fields");
+    }
+
+    @Test
+    void shouldUploadBook() throws Exception {
+        Book book = new Book();
+        when(bookRepository.save(book)).thenReturn(book);
+        MockHttpServletResponse response = mvc.perform(multipart("http://localhost:" + port + "/addBookAsFile")
+                        .file("file", "Test Content".getBytes())
+                        .param("lang", "ENG")
+                        .param("title", "Test Content")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.MULTIPART_FORM_DATA))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString().equals("Test Content")).isTrue();
+    }
+
+    @Test
+    void shouldUploadExistingFile() throws Exception {
+        Book book = new Book();
+        String bookTitle = "Test Content";
+        when(bookRepository.findItemByTitle(bookTitle )).thenReturn(book);
+        MockHttpServletResponse response = mvc.perform(multipart("http://localhost:" + port + "/addBookAsFile")
+                        .file("file", bookTitle .getBytes())
+                        .param("lang", "ENG")
+                        .param("title", bookTitle )
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.MULTIPART_FORM_DATA))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.getContentAsString()).isEqualTo("This book already exists: " + bookTitle);
+    }
+
+    @Test
+    void shouldUploadBookNoFile() throws Exception {
+        Book book = new Book();
+        when(bookRepository.save(book)).thenReturn(book);
+        MockHttpServletResponse response = mvc.perform(multipart("http://localhost:" + port + "/addBookAsFile")
+                        .param("lang", "ENG")
+                        .param("title", "Test Content")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.MULTIPART_FORM_DATA))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void shouldUploadBookNoTitle() throws Exception {
+        Book book = new Book();
+        when(bookRepository.save(book)).thenReturn(book);
+        MockHttpServletResponse response = mvc.perform(multipart("http://localhost:" + port + "/addBookAsFile")
+                        .file("file", "Test Content".getBytes())
+                        .param("lang", "ENG")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.MULTIPART_FORM_DATA))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo("Please fill the mandatory fields");
+    }
+
+    @Test
+    void shouldUploadBookNoLang() throws Exception {
+        Book book = new Book();
+        when(bookRepository.save(book)).thenReturn(book);
+        MockHttpServletResponse response = mvc.perform(multipart("http://localhost:" + port + "/addBookAsFile")
+                        .file("file", "Test Content".getBytes())
+                        .param("title", "Test Content")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.MULTIPART_FORM_DATA))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo("Please fill the mandatory fields");
     }
 }

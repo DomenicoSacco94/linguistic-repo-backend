@@ -52,11 +52,15 @@ public class BooksController {
 
     @PostMapping(value = "/addBookAsFile",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    Book newBookFile(@RequestParam HashMap<String, String> formData, @RequestParam("file") MultipartFile file) {
+    String newBookFile(@RequestParam HashMap<String, String> formData, @RequestParam("file") MultipartFile file) {
         Book book = new Book();
-        System.out.println(formData.get("lang"));
         try {
-            if (formData.get("lang").isEmpty() || formData.get("title").isEmpty() || file.getBytes() == null) {
+            if (formData == null ||
+                    formData.get("lang") == null ||
+                    formData.get("lang").isEmpty() ||
+                    formData.get("title") == null ||
+                    formData.get("title").isEmpty() ||
+                    file.getBytes() == null) {
                 throw new BadRequestException("Please fill the mandatory fields");
             }
             book.setGenre(formData.get("genre"));
@@ -68,18 +72,15 @@ public class BooksController {
         } catch (Exception e) {
             throw new InternalServerException("Sorry, something went horribly wrong :(");
         }
-
-        if (book.getTitle() == null || book.getLang() == null || book.getRawContent() == null) {
-            throw new BadRequestException("Please fill the mandatory fields");
-        }
         if (bookRepository.findItemByTitle(book.getTitle()) != null) {
             throw new DuplicateBookException("This book already exists: " + book.getTitle());
         }
-        return bookRepository.save(book);
+        bookRepository.save(book);
+        return book.getTitle();
     }
 
     @PostMapping("/addBookAsText")
-    Book newBook(@RequestBody Book book) {
+    public Book newBook(@RequestBody Book book) {
         if (book.getTitle() == null || book.getLang() == null || book.getContent() == null) {
             throw new BadRequestException("Please fill the mandatory fields");
         }

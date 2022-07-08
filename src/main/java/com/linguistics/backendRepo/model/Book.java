@@ -19,11 +19,12 @@ public class Book implements Serializable {
     private byte[] rawContent;
     private String lang;
 
-    public Book(String id, String title, String content, byte[] rawContent) {
+    public Book(String id, String title, String lang, String content, byte[] rawContent) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.rawContent = rawContent;
+        this.lang = lang;
     }
 
     public Book() {
