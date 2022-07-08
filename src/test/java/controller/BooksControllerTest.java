@@ -51,7 +51,6 @@ public class BooksControllerTest {
 
     @BeforeEach
     public void setup() {
-
         mvc = MockMvcBuilders.standaloneSetup(booksController)
                 .setControllerAdvice(new ExceptionHandlerAdvice())
                 .build();
@@ -59,9 +58,9 @@ public class BooksControllerTest {
 
     @Test
     void shouldRetrieveAllBooks() throws Exception {
-        Book book1 = new Book(null, "book1", "ENG", "content book 1", null);
-        Book book2 = new Book(null, "book2", "ENG", null, new byte[]{0,0,0,0});
-        Book book3 = new Book(null, "book3", "ENG", "content book 3", null);
+        Book book1 = new Book(null, "book1", "ENG", "content book 1", null,"someGenre");
+        Book book2 = new Book(null, "book2", "ENG", null, new byte[]{0,0,0,0},"someGenre");
+        Book book3 = new Book(null, "book3", "ENG", "content book 3", null,"someGenre");
         List<Book> books = List.of(new Book[]{book1, book2, book3});
         when(bookRepository.getAllBy()).thenReturn(books);
         MockHttpServletResponse response = mvc.perform(
@@ -91,7 +90,7 @@ public class BooksControllerTest {
     @Test
     void shouldDeleteBookByIdConflict() throws Exception {
         String bookId = "123";
-        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null);
+        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null,"someGenre");
         when(bookRepository.findItemById(bookId)).thenReturn(book1);
 
         MockHttpServletResponse response = mvc.perform(
@@ -106,7 +105,7 @@ public class BooksControllerTest {
     @Test
     void shouldRetrieveBookById() throws Exception {
         String bookId = "123";
-        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null);
+        Book book1 = new Book(bookId, "book1", "ENG", "content book 1", null,"someGenre");
         when(bookRepository.findItemById(bookId)).thenReturn(book1);
         MockHttpServletResponse response = mvc.perform(
                         get("http://localhost:" + port + "/books/" + bookId)
@@ -134,7 +133,7 @@ public class BooksControllerTest {
     @Test
     void shouldRetrieveBookByTitle() throws Exception {
         String bookTitle = "book 1";
-        Book book1 = new Book(null, bookTitle, "ENG", null, null);
+        Book book1 = new Book(null, bookTitle, "ENG", null, null,"someGenre");
         when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -152,7 +151,7 @@ public class BooksControllerTest {
     @Test
     void shouldRetrieveBookByTitleNotFound() throws Exception {
         String bookTitle = "book 1";
-        Book book1 = new Book(null, bookTitle, "ENG", null, null);
+        Book book1 = new Book(null, bookTitle, "ENG", null, null,"someGenre");
         when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(null);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -170,7 +169,7 @@ public class BooksControllerTest {
     @Test
     void shouldSaveBookByText() throws Exception {
         String bookTitle = "book title";
-        Book book1 = new Book(null, bookTitle, "ENG", "some content", null);
+        Book book1 = new Book(null, bookTitle, "ENG", "some content", null,"someGenre");
         when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -187,7 +186,7 @@ public class BooksControllerTest {
     @Test
     void shouldSaveBookByTextConflict() throws Exception {
         String bookTitle = "book title";
-        Book book1 = new Book(null, bookTitle, "ENG", "some content", null);
+        Book book1 = new Book(null, bookTitle, "ENG", "some content", null,"someGenre");
         when(bookRepository.findItemByTitle(book1.getTitle())).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -203,7 +202,7 @@ public class BooksControllerTest {
     @Test
     void shouldSaveBookByTextNoContent() throws Exception {
         String bookTitle = "book title";
-        Book book1 = new Book(null, bookTitle, "ENG", null, null);
+        Book book1 = new Book(null, bookTitle, "ENG", null, null,"someGenre");
         when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -220,7 +219,7 @@ public class BooksControllerTest {
     @Test
     void shouldSaveBookByTextNoLanguage() throws Exception {
         String bookTitle = "book title";
-        Book book1 = new Book(null, bookTitle, null, "test content", null);
+        Book book1 = new Book(null, bookTitle, null, "test content", null,"someGenre");
         when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(
@@ -236,7 +235,7 @@ public class BooksControllerTest {
 
     @Test
     void shouldSaveBookByTextNoTitle() throws Exception {
-        Book book1 = new Book(null, null, "ENG", "test content", null);
+        Book book1 = new Book(null, null, "ENG", "test content", null,"someGenre");
         when(bookRepository.save(Mockito.any(Book.class))).thenReturn(book1);
         ObjectMapper mapper = new ObjectMapper();
         MockHttpServletResponse response = mvc.perform(

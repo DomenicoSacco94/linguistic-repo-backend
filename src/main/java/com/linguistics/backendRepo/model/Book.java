@@ -20,12 +20,13 @@ public class Book implements Serializable {
     private byte[] rawContent;
     private String lang;
 
-    public Book(String id, String title, String lang, String content, byte[] rawContent) {
+    public Book(String id, String title, String lang, String content, byte[] rawContent, String genre) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.rawContent = rawContent;
         this.lang = lang;
+        this.genre = genre;
     }
 
     public static Book getBookFromFile(HashMap<String, String> formData, byte[] fileBytes) {

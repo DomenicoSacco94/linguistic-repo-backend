@@ -16,8 +16,8 @@ import java.util.List;
 import static com.linguistics.backendRepo.validator.BookValidator.validateBook;
 import static com.linguistics.backendRepo.validator.BookValidator.validateBookFile;
 
-//TODO make test form unit to integration
 //TODO Dockerization
+//TODO DEPLOYMENT
 
 @RestController("/")
 public class BooksController {
