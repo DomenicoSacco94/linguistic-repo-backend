@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 @Document("Book")
 public class Book implements Serializable {
@@ -25,6 +26,15 @@ public class Book implements Serializable {
         this.content = content;
         this.rawContent = rawContent;
         this.lang = lang;
+    }
+
+    public static Book getBookFromFile(HashMap<String, String> formData, byte[] fileBytes) {
+        Book book = new Book();
+        book.setGenre(formData.get("genre"));
+        book.setLang(formData.get("lang"));
+        book.setTitle(formData.get("title"));
+        book.setRawContent(fileBytes);
+        return book;
     }
 
     public Book() {

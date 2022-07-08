@@ -3,18 +3,20 @@ package com.linguistics.backendRepo.controller;
 import com.linguistics.backendRepo.exceptions.BadRequestException;
 import com.linguistics.backendRepo.exceptions.BookNotFoundException;
 import com.linguistics.backendRepo.exceptions.DuplicateBookException;
-import com.linguistics.backendRepo.exceptions.InternalServerException;
 import com.linguistics.backendRepo.model.Book;
 import com.linguistics.backendRepo.repository.BookRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-//TODO add tests
-//TODO implement utils classes for conversion and validation
+import static com.linguistics.backendRepo.validator.BookValidator.validateBook;
+import static com.linguistics.backendRepo.validator.BookValidator.validateBookFile;
+
+//TODO make test form unit to integration
 //TODO Dockerization
 
 @RestController("/")
@@ -53,25 +55,16 @@ public class BooksController {
     @PostMapping(value = "/addBookAsFile",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     String newBookFile(@RequestParam HashMap<String, String> formData, @RequestParam("file") MultipartFile file) {
-        Book book = new Book();
+        byte[] fileBytes;
         try {
-            if (formData == null ||
-                    formData.get("lang") == null ||
-                    formData.get("lang").isEmpty() ||
-                    formData.get("title") == null ||
-                    formData.get("title").isEmpty() ||
-                    file.getBytes() == null) {
-                throw new BadRequestException("Please fill the mandatory fields");
-            }
-            book.setGenre(formData.get("genre"));
-            book.setLang(formData.get("lang"));
-            book.setTitle(formData.get("title"));
-            book.setRawContent(file.getBytes());
-        } catch (BadRequestException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new InternalServerException("Sorry, something went horribly wrong :(");
+            fileBytes = file.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        if (validateBookFile(formData, fileBytes)) {
+            throw new BadRequestException("Please fill the mandatory fields");
+        }
+        Book book = Book.getBookFromFile(formData, fileBytes);
         if (bookRepository.findItemByTitle(book.getTitle()) != null) {
             throw new DuplicateBookException("This book already exists: " + book.getTitle());
         }
@@ -81,7 +74,7 @@ public class BooksController {
 
     @PostMapping("/addBookAsText")
     public Book newBook(@RequestBody Book book) {
-        if (book.getTitle() == null || book.getLang() == null || book.getContent() == null) {
+        if (validateBook(book)) {
             throw new BadRequestException("Please fill the mandatory fields");
         }
         if (bookRepository.findItemByTitle(book.getTitle()) != null) {
