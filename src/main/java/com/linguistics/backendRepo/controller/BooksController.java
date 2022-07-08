@@ -28,11 +28,20 @@ public class BooksController {
 
     @GetMapping("/books")
     public List<Book> index() {
-        return bookRepository.findAll();
+        return bookRepository.getAllBy();
     }
 
-    @PostMapping("/book")
-    public Book singleParam(@RequestBody Book book) {
+    @GetMapping("/books/{id}")
+    public Book getBook(@PathVariable String id) throws BookNotFoundException {
+        Book book = bookRepository.findItemById(id);
+        if (book == null) {
+            throw new BookNotFoundException("This book id could not be found: " + id);
+        }
+        return book;
+    }
+
+    @PostMapping("/books")
+    public Book getBookByTitle(@RequestBody Book book) {
         String title = book.getTitle();
         Book retrievedBook = bookRepository.findItemByTitle(title);
         if (retrievedBook == null) {
