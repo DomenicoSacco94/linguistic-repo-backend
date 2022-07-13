@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ##the secret stuff ###
-**/src/main/resources/application-prod.properties
+/src/main/resources/application-prod.properties
