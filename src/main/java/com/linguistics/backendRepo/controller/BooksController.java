@@ -10,8 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 
-//TODO DEPLOYMENT
-
+@CrossOrigin
 @RestController("/")
 public class BooksController {
 

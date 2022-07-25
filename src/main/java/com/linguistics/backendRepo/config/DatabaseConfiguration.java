@@ -25,8 +25,6 @@ public class DatabaseConfiguration extends AbstractMongoClientConfiguration {
 
     @Override
     protected void configureClientSettings(MongoClientSettings.Builder builder) {
-        System.out.println("***connection");
-        System.out.println(mongoUri);
         builder.applyConnectionString(new ConnectionString(mongoUri));
     }
 }
