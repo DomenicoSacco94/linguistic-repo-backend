@@ -50,13 +50,13 @@ public class UserService implements UserDetailsService {
                 userDetails.getUsername());
     }
 
-    public User saveUser(SignupRequest signUpRequest) {
+    public void saveUser(SignupRequest signUpRequest) {
 
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             throw new DuplicateUsernameException("This user already exists: " + signUpRequest.getUsername());
         }
         User user = new User(signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Override

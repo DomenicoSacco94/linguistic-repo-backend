@@ -49,8 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/books/**","/auth/**").permitAll()
-                .antMatchers("/addBookAsText","/addBookAsFile").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/addBookAsText","/addBookAsFile").authenticated();
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
