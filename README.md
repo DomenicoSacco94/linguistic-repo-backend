@@ -1,7 +1,9 @@
 # linguistuc-repo-backend
 Backend microservice for the linguistic-repo
 
-Swagger at: http://localhost:8080/swagger-ui/index.html
+Swagger available at: https://stark-crag-00671.herokuapp.com/swagger-ui/index.html
+
+Frontend source code available at: https://github.com/DomenicoSacco94/linguistic-repo
 
 PROFILES:
 
