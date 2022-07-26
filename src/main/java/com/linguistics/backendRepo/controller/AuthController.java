@@ -1,17 +1,12 @@
 package com.linguistics.backendRepo.controller;
-import javax.validation.Valid;
 
 import com.linguistics.backendRepo.model.JwtResponse;
 import com.linguistics.backendRepo.model.LoginRequest;
 import com.linguistics.backendRepo.model.SignupRequest;
-import com.linguistics.backendRepo.model.User;
 import com.linguistics.backendRepo.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

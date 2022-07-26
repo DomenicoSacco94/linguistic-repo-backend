@@ -1,7 +1,6 @@
 package com.linguistics.backendRepo.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,6 +24,7 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
     }
+
     @PersistenceCreator
     private User(String id, String username, String password) {
         this.id = id;
@@ -70,7 +70,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new HashSet();
+        return new HashSet<>();
     }
 
     public String getPassword() {
