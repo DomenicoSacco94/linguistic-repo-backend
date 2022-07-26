@@ -46,7 +46,7 @@ public class BooksController {
         return bookService.saveBookAsText(book);
     }
 
-    @DeleteMapping("/books/{id}")
+    @DeleteMapping("/deleteBook/{id}")
     void deleteBook(@PathVariable String id) throws BookNotFoundException {
         bookService.deleteBookById(id);
     }

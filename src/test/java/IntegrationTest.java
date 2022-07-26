@@ -88,7 +88,7 @@ public class IntegrationTest {
     void shouldDeleteBookById() throws Exception {
         String bookId = referenceBook.getId();
         MockHttpServletResponse response = mvc.perform(
-                        delete("http://localhost:" + port + "/books/" + bookId)
+                        delete("http://localhost:" + port + "/deleteBook/" + bookId)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());

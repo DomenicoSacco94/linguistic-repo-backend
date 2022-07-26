@@ -79,7 +79,7 @@ public class BooksControllerTest {
         when(bookRepository.findItemById(bookId)).thenReturn(null);
 
         MockHttpServletResponse response = mvc.perform(
-                        delete("http://localhost:" + port + "/books/" + bookId)
+                        delete("http://localhost:" + port + "/deleteBook/" + bookId)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
@@ -94,7 +94,7 @@ public class BooksControllerTest {
         when(bookRepository.findItemById(bookId)).thenReturn(book1);
 
         MockHttpServletResponse response = mvc.perform(
-                        delete("http://localhost:" + port + "/books/" + bookId)
+                        delete("http://localhost:" + port + "/deleteBook/" + bookId)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
