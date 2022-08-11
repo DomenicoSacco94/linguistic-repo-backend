@@ -37,6 +37,13 @@ public class ExceptionHandlerAdvice {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(ReservedUsernameException.class)
+    public ResponseEntity handleException(ReservedUsernameException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(InternalServerException.class)
     public ResponseEntity handleException(InternalServerException e) {
         return ResponseEntity

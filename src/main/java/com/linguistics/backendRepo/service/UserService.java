@@ -2,6 +2,7 @@ package com.linguistics.backendRepo.service;
 
 import com.linguistics.backendRepo.config.JwtUtils;
 import com.linguistics.backendRepo.exceptions.DuplicateUsernameException;
+import com.linguistics.backendRepo.exceptions.ReservedUsernameException;
 import com.linguistics.backendRepo.model.JwtResponse;
 import com.linguistics.backendRepo.model.LoginRequest;
 import com.linguistics.backendRepo.model.SignupRequest;
@@ -38,6 +39,11 @@ public class UserService implements UserDetailsService {
     }
 
     public JwtResponse authUser(LoginRequest loginRequest) {
+
+        if(!loginRequest.getUsername().equals("admin")) {
+            throw new ReservedUsernameException("Only admin user is allowed!");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -51,6 +57,10 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveUser(SignupRequest signUpRequest) {
+
+        if(!signUpRequest.getUsername().equals("admin")) {
+            throw new ReservedUsernameException("Only admin user is allowed!");
+        }
 
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             throw new DuplicateUsernameException("This user already exists: " + signUpRequest.getUsername());
