@@ -40,10 +40,6 @@ public class UserService implements UserDetailsService {
 
     public JwtResponse authUser(LoginRequest loginRequest) {
 
-        if(!loginRequest.getUsername().equals("admin")) {
-            throw new ReservedUsernameException("Only admin user is allowed!");
-        }
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
